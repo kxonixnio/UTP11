@@ -1,5 +1,3 @@
-# UTP11
-Last UTP task
 Biuro podróży otrzymuje od róznych kontrahentów (polskich, angielskich, niemieckich... ) pliki z ofertami wyjazdów-wycieczek. Każda oferta jest w jednym wierszu pliku i zawiera, rozdzielone znakami tabulacji:
 
 lokalizacje_kontrahenta kraj  date_wyjazdu  date_powrotu miejsce cene symbol_waluty
