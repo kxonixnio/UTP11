@@ -20,7 +20,28 @@ public class TravelData {
     }
 
     public List<String> getOffersDescriptionsList(String loc, String dateFormat) {
-        return null;
+        List<String> list = new ArrayList<>();
+
+        Locale destLocale = Locale.forLanguageTag(loc.replace("_", "-"));
+        NumberFormat numberFormat = NumberFormat.getInstance(destLocale);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
+
+        data.forEach(record -> {
+            StringBuilder bobTheBuilder = new StringBuilder();
+
+            String country = translateCountry(record.getCountryCode(), destLocale, record.getCountryName());
+            bobTheBuilder.append(country).append(" ");
+            bobTheBuilder.append(simpleDateFormat.format(record.getDateFrom())).append(" ");
+            bobTheBuilder.append(simpleDateFormat.format(record.getDateTo())).append(" ");
+//            bobTheBuilder.append(record.getLocation()).append(" ");
+            bobTheBuilder.append(translateLocation(destLocale, record.getLocation())).append(" ");
+            bobTheBuilder.append(numberFormat.format(record.getPrice())).append(" ");
+            bobTheBuilder.append(record.getCurrency());
+
+            list.add(bobTheBuilder.toString());
+        });
+
+        return list;
     }
 
     public void readData(File dataDir){
@@ -60,15 +81,59 @@ public class TravelData {
 
             Files.walkFileTree(Paths.get(String.valueOf(dataDir)), fileVisitor);
 
-            for(Record record : data){
-                System.out.println(record.getCountryCode() + " " + record.getCountryName() + " " + record.getDateFrom() + " " + record.getDateTo() + " " + record.getLocation() + " " + record.getPrice() + " " + record.getCurrency());
-            }
+//            for(Record record : data){
+//                System.out.println(record.getCountryCode() + " " + record.getCountryName() + " " + record.getDateFrom() + " " + record.getDateTo() + " " + record.getLocation() + " " + record.getPrice() + " " + record.getCurrency());
+//            }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+    private String translateCountry(Locale inLocale, Locale outLocale, String countrName) {
+        for (Locale loc : Locale.getAvailableLocales()) {
+            if (loc.getDisplayCountry(inLocale).equals(countrName)) {
+                return loc.getDisplayCountry(outLocale);
+            }
+        }
+
+        return null;
+    }
+
+    private String translateLocation(Locale destLocale, String location){
+        HashMap<String, String> locations = new HashMap<>();
+        locations.put("morze", "sea");
+        locations.put("jezioro", "lake");
+        locations.put("góry", "mountains");
+
+        if(destLocale.toString().startsWith("pl")) {
+            for (Map.Entry<String,String> entry : locations.entrySet()){
+                if(location.equals(entry.getValue())){
+                    return entry.getKey();
+                }
+            }
+        }
+        else if(destLocale.toString().startsWith("en")) {
+            for (Map.Entry<String,String> entry : locations.entrySet()){
+                if(location.equals(entry.getKey())){
+                    return entry.getValue();
+                }
+            }
+        }
+
+        return location;
+    }
+
 }
 
 
 //https://mkyong.com/java/how-to-read-utf-8-encoded-data-from-a-file-java/
+
+/*
+Japonia 2015-09-01 2015-10-01 jezioro 10 000,2 PLN
+Włochy 2015-07-10 2015-07-30 morze 4 000,1 PLN
+Stany Zjednoczone Ameryki 2015-07-10 2015-08-30 góry 5 400,2 USD
+Japan 2015-09-01 2015-10-01 lake 10,000.2 PLN
+Italy 2015-07-10 2015-07-30 sea 4,000.1 PLN
+United States 2015-07-10 2015-08-30 mountains 5,400.2 USD
+ */
