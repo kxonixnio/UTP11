@@ -1,8 +1,10 @@
 package zad1;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
@@ -10,29 +12,46 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.io.IOException;
 
 public class TravelData {
-    private File dataDir;   //"data"
-    private static List<String> output = new ArrayList<>();
+    private List<Record> data = new ArrayList<>();
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    public TravelData(File datafir) {
-        this.dataDir = datafir;
+    public TravelData(File datadir) {
+        readData(datadir);
     }
 
     public List<String> getOffersDescriptionsList(String loc, String dateFormat) {
-        readFilesToList(dataDir);
-
-        return output;
+        return null;
     }
 
-    public void readFilesToList(File dataDir){
+    public void readData(File dataDir){
         try {
             FileVisitor<Path> fileVisitor = new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path visitedFilePath, BasicFileAttributes fileAttributes) throws IOException {
                     try (BufferedReader in = new BufferedReader(
                             new InputStreamReader(new FileInputStream(visitedFilePath.toFile()), StandardCharsets.UTF_8))) {
-                        String str;
-                        while ((str = in.readLine()) != null) {
-                            output.add(str);
+                        String line;
+                        while ((line = in.readLine()) != null) {
+                            String[] lineData = line.split("\t");
+                            int i = 0;
+                            Locale locale = Locale.forLanguageTag(lineData[i++].replace("_", "-"));
+                            NumberFormat numberFormat = NumberFormat.getInstance(locale);
+
+                            try {
+                                data.add(
+                                        new Record(
+                                                locale,
+                                                lineData[i++],
+                                                simpleDateFormat.parse(lineData[i++]),
+                                                simpleDateFormat.parse(lineData[i++]),
+                                                lineData[i++],
+                                                numberFormat.parse(lineData[i++]).doubleValue(),
+                                                lineData[i]
+                                        )
+                                );
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                     return FileVisitResult.CONTINUE;
@@ -40,6 +59,10 @@ public class TravelData {
             };
 
             Files.walkFileTree(Paths.get(String.valueOf(dataDir)), fileVisitor);
+
+            for(Record record : data){
+                System.out.println(record.getCountryCode() + " " + record.getCountryName() + " " + record.getDateFrom() + " " + record.getDateTo() + " " + record.getLocation() + " " + record.getPrice() + " " + record.getCurrency());
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
