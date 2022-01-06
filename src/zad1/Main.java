@@ -21,7 +21,7 @@ public class Main {
       for (String od : odlist) System.out.println(od);
     }
     // --- część bazodanowa
-    String url = "url"; /*<-- tu należy wpisać URL bazy danych */
+    String url = "jdbc:sqlserver://localhost;integratedSecurity=true;"; /*<-- tu należy wpisać URL bazy danych */
     Database db = new Database(url, travelData);
     db.create();
     db.showGui();
