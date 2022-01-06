@@ -10,10 +10,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.io.IOException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TravelData {
-    private List<Record> data = new ArrayList<>();
+    private List<Record> dataAsRecords = new ArrayList<>();
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    private List<String> dataAsString = new ArrayList<>();
 
     public TravelData(File datadir) {
         readData(datadir);
@@ -26,14 +29,13 @@ public class TravelData {
         NumberFormat numberFormat = NumberFormat.getInstance(destLocale);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(dateFormat);
 
-        data.forEach(record -> {
+        dataAsRecords.forEach(record -> {
             StringBuilder bobTheBuilder = new StringBuilder();
 
             String country = translateCountry(record.getCountryCode(), destLocale, record.getCountryName());
             bobTheBuilder.append(country).append(" ");
             bobTheBuilder.append(simpleDateFormat.format(record.getDateFrom())).append(" ");
             bobTheBuilder.append(simpleDateFormat.format(record.getDateTo())).append(" ");
-//            bobTheBuilder.append(record.getLocation()).append(" ");
             bobTheBuilder.append(translateLocation(destLocale, record.getLocation())).append(" ");
             bobTheBuilder.append(numberFormat.format(record.getPrice())).append(" ");
             bobTheBuilder.append(record.getCurrency());
@@ -41,6 +43,11 @@ public class TravelData {
             list.add(bobTheBuilder.toString());
         });
 
+        //łączymy to co już zczytane z tym co zczytaliśmy teraz
+        dataAsString = Stream.concat(dataAsString.stream(), list.stream()).collect(Collectors.toList());
+
+        //Zwracamy tylko listę wczytaną "teraz" tak, żeby tylko ona została wyświetlona w Mainie (żeby nie wyświetlać
+        //drugi raz tego, co zostało wcześniej wyświetlone
         return list;
     }
 
@@ -59,7 +66,7 @@ public class TravelData {
                             NumberFormat numberFormat = NumberFormat.getInstance(locale);
 
                             try {
-                                data.add(
+                                dataAsRecords.add(
                                         new Record(
                                                 locale,
                                                 lineData[i++],
@@ -124,10 +131,18 @@ public class TravelData {
         return location;
     }
 
+    public List<String> getDataAsString() {
+        return dataAsString;
+    }
+
+    public List<Record> getDataAsRecords() {
+        return dataAsRecords;
+    }
 }
 
 
 //https://mkyong.com/java/how-to-read-utf-8-encoded-data-from-a-file-java/
+//https://stackoverflow.com/questions/189559/how-do-i-join-two-lists-in-java
 
 /*
 Japonia 2015-09-01 2015-10-01 jezioro 10 000,2 PLN
