@@ -109,7 +109,8 @@ public class Database {
     }
 
     public void showGui() {
-
+        //Trzeba zczytać i przekazać dane z Database, a nie travelData
+        new GUI(travelData);
     }
 }
 
