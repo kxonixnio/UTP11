@@ -85,28 +85,11 @@ public class Database {
         }
 
         try {
-            String selectAll = "SELECT * FROM travelData";
-            ResultSet rs = statement.executeQuery(selectAll);
-
-            while(rs.next()) {
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getString(3));
-                System.out.println(rs.getString(4));
-                System.out.println(rs.getString(5));
-                System.out.println(rs.getString(6));
-                System.out.println(rs.getString(7));
-                System.out.println(rs.getString(8));
-            }
-
-            rs.close();
-            //Pamiętaj to potem zamknąć
             statement.close();
             conn.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
-
     }
 
     public void showGui() {
