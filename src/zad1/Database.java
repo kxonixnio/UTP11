@@ -2,6 +2,10 @@ package zad1;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class Database {
 
@@ -95,11 +99,8 @@ public class Database {
                 System.out.println(rs.getString(8));
             }
 
-            /*
-            Tu skończyłeś - teraz trzeba zczytać dane z bazy danych i "przekazać" do GUI, które też jest do ogarnięcia
-             */
-
             rs.close();
+            //Pamiętaj to potem zamknąć
             statement.close();
             conn.close();
         } catch (SQLException throwables) {
@@ -109,9 +110,47 @@ public class Database {
     }
 
     public void showGui() {
-        //Trzeba zczytać i przekazać dane z Database, a nie travelData
-        new GUI(travelData);
+        new GUI(getDataFromDatabase());
     }
+
+    public ArrayList<Record> getDataFromDatabase(){
+
+        ArrayList<Record> travelData = new ArrayList<Record>();
+
+        try {
+            conn = DriverManager.getConnection(url);
+            statement = conn.createStatement();
+
+            String selectData = "SELECT idTravel, countryCode, countryName, dateFrom, dateTo, location, price, currency FROM travelData";
+            ResultSet resultSet = statement.executeQuery(selectData);
+
+            while(resultSet.next()){
+                Locale countryCode = Locale.forLanguageTag(resultSet.getString("countryCode"));
+                String countryName = resultSet.getString("countryName");
+                Date dateFrom = resultSet.getDate("dateFrom");
+                Date dateTo = resultSet.getDate("dateTo");
+                String location = resultSet.getString("location");
+                Double price = resultSet.getDouble("price");
+                String currency = resultSet.getString("currency");
+
+                travelData.add(new Record(
+                        countryCode,
+                        countryName,
+                        dateFrom,
+                        dateTo,
+                        location,
+                        price,
+                        currency
+                ));
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        return travelData;
+    }
+
 }
 
 

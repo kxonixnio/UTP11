@@ -3,14 +3,11 @@ package zad1;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
 
 public class GUI {
 
-    private TravelData travelData;
-
-    public GUI(TravelData travelData) {
-
-        this.travelData = travelData;
+    public GUI(ArrayList<Record> travelData) {
 
         JFrame frame = new JFrame("Travel App");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
