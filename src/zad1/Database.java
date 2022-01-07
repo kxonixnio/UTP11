@@ -59,6 +59,7 @@ public class Database {
         }
     }
 
+    //Problem jest taki, że do bazy danych "wpuszczane" są polskie znaki, ale baza chyba nie obsługuje polskich znaków
     public void fillDatabase() {
         int ID = 1;
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
@@ -107,9 +108,16 @@ public class Database {
             String selectData = "SELECT idTravel, countryCode, countryName, dateFrom, dateTo, location, price, currency FROM travelData";
             ResultSet resultSet = statement.executeQuery(selectData);
 
+            int i = 0;
+
+            /*
+            CountryName nie zczytujemy z bazy danych tylko z tego co mamy lokalnie, bo mssql nie przechowuje polskich
+            znaków (albo nie potrafię tego ustawić)
+             */
             while(resultSet.next()){
                 Locale countryCode = Locale.forLanguageTag(resultSet.getString("countryCode"));
-                String countryName = resultSet.getString("countryName");
+//                String countryName = resultSet.getString("countryName");
+                String countryName = this.travelData.getDataAsRecords().get(i).getCountryName();
                 Date dateFrom = resultSet.getDate("dateFrom");
                 Date dateTo = resultSet.getDate("dateTo");
                 String location = resultSet.getString("location");
@@ -125,6 +133,7 @@ public class Database {
                         price,
                         currency
                 ));
+                i += 1;
             }
 
         } catch (SQLException throwables) {
