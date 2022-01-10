@@ -4,10 +4,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class GUI {
 
@@ -17,7 +14,7 @@ public class GUI {
 
         this.travelData = travelData;
 
-        JFrame frame = new JFrame("Travel App");
+        JFrame frame = new JFrame("Travel App s22472");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800,300);
         frame.setLayout(new BorderLayout());
@@ -79,10 +76,10 @@ public class GUI {
                     String[] recordData = {
                             String.valueOf(id2),
                             String.valueOf(record.getCountryCode()),
-                            translateCountry(record.getCountryCode(), Locale.forLanguageTag("pl-PL"), record.getCountryName()),
+                            TravelData.translateCountry(record.getCountryCode(), Locale.forLanguageTag("pl-PL"), record.getCountryName()),
                             String.valueOf(record.getDateFrom()),
                             String.valueOf(record.getDateTo()),
-                            translateLocation(Locale.forLanguageTag("pl-PL"), record.getLocation()),
+                            TravelData.translateLocation(Locale.forLanguageTag("pl-PL"), record.getLocation()),
                             String.valueOf(record.getPrice()),
                             record.getCurrency()
                     };
@@ -106,10 +103,10 @@ public class GUI {
                     String[] recordData = {
                             String.valueOf(id2),
                             String.valueOf(record.getCountryCode()),
-                            translateCountry(record.getCountryCode(), Locale.forLanguageTag("en-GB"), record.getCountryName()),
+                            TravelData.translateCountry(record.getCountryCode(), Locale.forLanguageTag("en-GB"), record.getCountryName()),
                             String.valueOf(record.getDateFrom()),
                             String.valueOf(record.getDateTo()),
-                            translateLocation(Locale.forLanguageTag("en-GB"), record.getLocation()),
+                            TravelData.translateLocation(Locale.forLanguageTag("en-GB"), record.getLocation()),
                             String.valueOf(record.getPrice()),
                             record.getCurrency()
                     };
@@ -120,42 +117,13 @@ public class GUI {
                 }
             }
         });
-    }
 
-    private String translateCountry(Locale inLocale, Locale outLocale, String countrName) {
-        for (Locale loc : Locale.getAvailableLocales()) {
-            if (loc.getDisplayCountry(inLocale).equals(countrName)) {
-                return loc.getDisplayCountry(outLocale);
-            }
-        }
-
-        return countrName;
-    }
-
-    private String translateLocation(Locale destLocale, String location){
-        HashMap<String, String> locations = new HashMap<>();
-        locations.put("morze", "sea");
-        locations.put("jezioro", "lake");
-        locations.put("góry", "mountains");
-
-        if(destLocale.toString().startsWith("pl")) {
-            for (Map.Entry<String,String> entry : locations.entrySet()){
-                if(location.equals(entry.getValue())){
-                    return entry.getKey();
+        button2.addActionListener(
+                e -> {
+                    System.out.println("Nie mam pojęcia czym mają być 'ustawienia regionalne', a deadline goni, więc zostawiam to tak jak jest");
                 }
-            }
-        }
-        else if(destLocale.toString().startsWith("en")) {
-            for (Map.Entry<String,String> entry : locations.entrySet()){
-                if(location.equals(entry.getKey())){
-                    return entry.getValue();
-                }
-            }
-        }
-
-        return location;
+        );
     }
-
 }
 
 //https://www.javatpoint.com/java-jtable

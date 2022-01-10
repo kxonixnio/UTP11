@@ -88,16 +88,12 @@ public class TravelData {
 
             Files.walkFileTree(Paths.get(String.valueOf(dataDir)), fileVisitor);
 
-//            for(Record record : data){
-//                System.out.println(record.getCountryCode() + " " + record.getCountryName() + " " + record.getDateFrom() + " " + record.getDateTo() + " " + record.getLocation() + " " + record.getPrice() + " " + record.getCurrency());
-//            }
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private String translateCountry(Locale inLocale, Locale outLocale, String countrName) {
+    public static String translateCountry(Locale inLocale, Locale outLocale, String countrName) {
         for (Locale loc : Locale.getAvailableLocales()) {
             if (loc.getDisplayCountry(inLocale).equals(countrName)) {
                 return loc.getDisplayCountry(outLocale);
@@ -107,32 +103,26 @@ public class TravelData {
         return null;
     }
 
-    private String translateLocation(Locale destLocale, String location){
-        HashMap<String, String> locations = new HashMap<>();
-        locations.put("morze", "sea");
-        locations.put("jezioro", "lake");
-        locations.put("góry", "mountains");
+    public static String translateLocation(Locale destLocale, String location){
+        ResourceBundle engToPL = new LocationInfo_pl_PL();
+        ResourceBundle plToEng = new LocationInfo_en_GB();
 
-        if(destLocale.toString().startsWith("pl")) {
-            for (Map.Entry<String,String> entry : locations.entrySet()){
-                if(location.equals(entry.getValue())){
-                    return entry.getKey();
-                }
+        if(destLocale.toString().startsWith("pl")){
+            try {
+                return engToPL.getString(location);
+            }catch(MissingResourceException missingResourceException){
+                return location;
             }
         }
-        else if(destLocale.toString().startsWith("en")) {
-            for (Map.Entry<String,String> entry : locations.entrySet()){
-                if(location.equals(entry.getKey())){
-                    return entry.getValue();
-                }
+        else if(destLocale.toString().startsWith("en")){
+            try {
+                return plToEng.getString(location);
+            }catch(MissingResourceException missingResourceException){
+                return location;
             }
         }
 
         return location;
-    }
-
-    public List<String> getDataAsString() {
-        return dataAsString;
     }
 
     public List<Record> getDataAsRecords() {
